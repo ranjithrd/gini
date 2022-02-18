@@ -1,0 +1,16 @@
+{
+  "name": "gini",
+  "version": "1.0.0",
+  "license": "MIT",
+  "scripts": {
+    "gini-cli": "node gini.mjs",
+    "start": "parcel index.html",
+    "build": "parcel build index.html"
+  },
+  "devDependencies": {
+    "parcel": "^2.3.1"
+  },
+  "dependencies": {
+    "chalk": "^5.0.0"
+  }
+}

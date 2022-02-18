@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+	</head>
+	<body>
+		<!-- HTML -->
+		<main>
+			<section>
+				<h1>Gini Coefficient Calculator</h1>
+				<p>
+					Gini Coefficient analyses inequality across a population
+					(its origin) but also across any list of values.
+					<br />
+					Enter your values here in raw form or use the input fields
+					below.
+				</p>
+			</section>
+			<section>
+				<h3>Inputs</h3>
+				<div id="form"></div>
+				<button class="inline" onclick="onHandleNewField()">New</button>
+				<button onclick="onHandleForm()">Calculate</button>
+			</section>
+			<section>
+				<h3>Raw Form</h3>
+				<p>
+					Format: numbers separated by commas (1, 2, 3, 4) or in the
+					format value:count (50:2, 100:3 which resolves to 50, 50,
+					100, 100, 100)
+				</p>
+				<textarea name="raw_data" id="raw_data"></textarea>
+				<button onclick="onHandleClick()">Calculate Raw Data</button>
+			</section>
+			<section id="s_result" class="hidden">
+				<h3>Result</h3>
+				<h1 id="result"></h1>
+				<sub>Lower is more equal</sub>
+			</section>
+			<p id="error"></p>
+		</main>
+
+		<!-- JS -->
+		<script type="module">
+			import { gini, parseArgs } from "./ginicalc.js"
+
+			function setHtml(id, val) {
+				console.log([id, val])
+				document.getElementById(id).innerHTML = val
+			}
+			function hide(id) {
+				document.getElementById(id).classList.add("hidden")
+			}
+			function unhide(id) {
+				document.getElementById(id).classList.remove("hidden")
+			}
+
+			window.onHandleClick = function handleRaw() {
+				try {
+					hide("s_result")
+					const val = document.getElementById("raw_data").value.trim()
+					const args = parseArgs(val.split(",").map((e) => e.trim()))
+					console.log(args)
+					const giniVal = gini(args)
+					if (giniVal === NaN) {
+						setHtml("error", "Enter valid inputs")
+					} else {
+						unhide("s_result")
+						setHtml("result", giniVal)
+					}
+				} catch (error) {
+					setHtml("error", error)
+				}
+			}
+
+			window.onHandleNewField = () => {
+				const n = document.createElement("input")
+				n.setAttribute("type", "text")
+				n.setAttribute("placeholder", "Number or value:count")
+				n.classList.add("f_input")
+				document.getElementById("form").appendChild(n)
+			}
+
+			window.onHandleForm = () => {
+				const els = document.getElementsByClassName("f_input")
+				let vals = []
+				for (let el of els) {
+					if (el.value) vals.push(el.value.trim())
+				}
+				const parsedArgs = parseArgs(vals)
+				console.log(parsedArgs)
+				const giniVal = gini(parsedArgs)
+				if (giniVal === NaN) {
+					setHtml("error", "Enter valid inputs")
+				} else {
+					unhide("s_result")
+					setHtml("result", giniVal)
+				}
+			}
+
+			window.onHandleNewField()
+		</script>
+
+		<!-- CSS -->
+		<style>
+			:root {
+				--primary: rgb(167, 2, 2);
+			}
+
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
+
+			html {
+				font-family: "Inter", -apple-system, BlinkMacSystemFont,
+					"Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
+					"Helvetica Neue", sans-serif;
+			}
+
+			main {
+				padding: 4em;
+				display: flex;
+				flex-direction: column;
+				gap: 3em;
+			}
+
+			section {
+				display: flex;
+				flex-direction: column;
+				gap: 1em;
+			}
+
+			.hidden {
+				display: none;
+				visibility: hidden;
+				max-height: 0;
+				transition: max-height 300ms ease-in-out;
+			}
+
+			#form {
+				display: flex;
+				flex-direction: column;
+				gap: 8px;
+				align-items: stretch;
+			}
+
+			input {
+				padding: 12px;
+                border-radius: 8px;
+                box-shadow: none;
+                border: 1px gray solid;
+			}
+            
+            textarea {
+                padding: 12px;
+                border-radius: 8px;
+                border: 1px gray solid;
+                resize: vertical;
+            }
+
+			button {
+				padding: 12px;
+				border: none;
+				background-color: var(--primary);
+				color: white;
+				cursor: pointer;
+				border-radius: 8px;
+				font-weight: bold;
+			}
+
+			button.inline {
+				padding: none;
+				border: none;
+				box-shadow: none;
+				background: none;
+				cursor: pointer;
+				color: var(--primary);
+			}
+
+            h1 {
+                font-size: 4em;
+            }
+		</style>
+	</body>
+</html>
